@@ -3,7 +3,7 @@
     <item>
         <shape android:shape="ring" android:innerRadiusRatio="2.7"
             android:thicknessRatio="50.0" android:useLevel="false">
-            <solid android:color="@color/gray"/>
+            <solid android:color="#C9C9CC"/>
         </shape>
     </item>
 </layer-list>
