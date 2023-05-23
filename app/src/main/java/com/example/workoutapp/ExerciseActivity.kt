@@ -1,6 +1,7 @@
 package com.example.workoutapp
 
 import android.annotation.SuppressLint
+import android.app.AlertDialog
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
@@ -11,7 +12,6 @@ import android.view.View
 import android.widget.Toast
 import com.example.workoutapp.databinding.ActivityExerciseBinding
 import java.util.*
-import kotlin.collections.ArrayList
 
 class ExerciseActivity : AppCompatActivity(), TextToSpeech.OnInitListener {
     private var binding: ActivityExerciseBinding? = null
@@ -22,7 +22,7 @@ class ExerciseActivity : AppCompatActivity(), TextToSpeech.OnInitListener {
     private var timeElapsed = 0 //initial value of the exercise timer in seconds
     private var timeRemaining = 0L //needed for when the exercise timer is paused; in milliseconds
     private var currentExerciseIndex = -1 //current index of the exercise arrayList
-    private var currentExercise: ExerciseModel? = null
+    private var currentExercise: ExerciseModel? = null //the current exercise
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -34,11 +34,11 @@ class ExerciseActivity : AppCompatActivity(), TextToSpeech.OnInitListener {
         text2Speech = TextToSpeech(this, this) //initialize to text2speech object
 
         //prepare the action bar
-//        setSupportActionBar(binding?.exerciseToolbar)
-//        if (supportActionBar != null) supportActionBar?.setDisplayHomeAsUpEnabled(true)
-//        binding?.exerciseToolbar?.setNavigationOnClickListener {
-//            onBackPressed()
-//        }
+        setSupportActionBar(binding?.exerciseToolbar)
+        if (supportActionBar != null) supportActionBar?.setDisplayHomeAsUpEnabled(true) //show back arror for the action bar
+        binding?.exerciseToolbar?.setNavigationOnClickListener { //what will happen when the back arrow is pressed
+            initAlertDialog()
+        }
 
         //when the 'next' button is clicked
         binding?.nextBtn?.setOnClickListener{
@@ -71,6 +71,12 @@ class ExerciseActivity : AppCompatActivity(), TextToSpeech.OnInitListener {
                 startExercise(timeRemaining, exerciseList!![currentExerciseIndex].hasDuration)
             }
         }
+
+        //when the rest countdown play button is pressed
+        binding?.timerPlayBtn?.setOnClickListener{
+            startRestTimer()
+            it.visibility = View.GONE
+        }
         prepareRestLayout() //start the countdown to exercise on screen load
     }
 
@@ -100,7 +106,8 @@ class ExerciseActivity : AppCompatActivity(), TextToSpeech.OnInitListener {
                 initialRestTime--
                 val sentence = if (!currentExercise!!.hasDuration) "Get ready for... ${currentExercise!!.number}, ${currentExercise!!.name}"
                 else "Get ready for... ${currentExercise!!.duration} seconds, ${currentExercise!!.name}"
-                if (initialRestTime == 8) speakOut(sentence)
+                if (initialRestTime == 8) speakOut(sentence) //speak the next exercise
+                if (initialRestTime <= 3) speakOut(initialRestTime.toString()) //do a countdown from 3
                 binding?.restProgressBar?.progress = initialRestTime
                 binding?.restTimer?.text = (initialRestTime).toString()
             }
@@ -163,6 +170,10 @@ class ExerciseActivity : AppCompatActivity(), TextToSpeech.OnInitListener {
                 }else {
                     binding?.exerciseProgressBar?.progress = (timeRemaining / 1000).toInt()
                     binding?.exerciseTimer?.text = (timeRemaining / 1000).toString()
+                    when((timeRemaining/1000).toInt()){
+                        in 3 downTo 1 -> speakOut((timeRemaining/1000).toString()) //do a countdown from 3
+                        0 -> speakOut("DONE") //when the countdown is finished
+                    }
                 }
             }
             override fun onFinish() {
@@ -175,8 +186,38 @@ class ExerciseActivity : AppCompatActivity(), TextToSpeech.OnInitListener {
         }.start()
     }
 
+    //use text2speech
     private fun speakOut(sentence: String){
         text2Speech?.speak(sentence, TextToSpeech.QUEUE_FLUSH, null,null)
+    }
+
+    //setup the confirmation alert for the back button
+    private fun initAlertDialog(){
+        val alertDialog = AlertDialog.Builder(this).apply {
+            setMessage("You have come a long way. Going back will erase your current progress.\n" +
+                    "Are you sure you want to go back?")
+            setNegativeButton("NO") { dialog, _ ->
+                dialog.dismiss()
+            }
+            setPositiveButton("YES") {dialog, _->
+                this@ExerciseActivity.finish()
+                dialog.dismiss()
+            }
+            setCancelable(false)
+        }.show()
+
+    }
+
+    //onInit text2speech
+    override fun onInit(status: Int) {
+        if (status == TextToSpeech.SUCCESS){
+            Toast.makeText(this, "Text to speech enabled", Toast.LENGTH_SHORT).show()
+            text2Speech?.setSpeechRate(0.8f)
+            val result = text2Speech?.setLanguage(Locale.getDefault())
+            if(result == TextToSpeech.LANG_MISSING_DATA || result == TextToSpeech.LANG_NOT_SUPPORTED){
+                Toast.makeText(this, "Text To Speech language not available", Toast.LENGTH_LONG).show()
+            }
+        } else Toast.makeText(this, "Text to speech initialization failed", Toast.LENGTH_LONG).show()
     }
 
     override fun onDestroy() {
@@ -193,18 +234,14 @@ class ExerciseActivity : AppCompatActivity(), TextToSpeech.OnInitListener {
         super.onPause()
         //behave as though the exercise was paused
         if(timer != null) timer?.cancel()
+        //display play button if the rest screen was paused
+        if (binding?.restScreen?.visibility == View.VISIBLE) binding?.timerPlayBtn?.visibility = View.VISIBLE
         binding?.pauseBtn?.tag = "play"
         binding?.pauseImg?.setImageResource(R.drawable.play_button)
     }
 
-    override fun onInit(status: Int) {
-        if (status == TextToSpeech.SUCCESS){
-            Toast.makeText(this, "Text to speech enabled", Toast.LENGTH_SHORT).show()
-            text2Speech?.setSpeechRate(0.8f)
-            val result = text2Speech?.setLanguage(Locale.getDefault())
-            if(result == TextToSpeech.LANG_MISSING_DATA || result == TextToSpeech.LANG_NOT_SUPPORTED){
-                Toast.makeText(this, "Text To Speech language not available", Toast.LENGTH_LONG).show()
-            }
-        } else Toast.makeText(this, "Text To Speech currently not available", Toast.LENGTH_LONG).show()
+    override fun onBackPressed() {
+        initAlertDialog()
     }
+
 }
