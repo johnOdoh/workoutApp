@@ -35,7 +35,7 @@ class ExerciseActivity : AppCompatActivity(), TextToSpeech.OnInitListener {
 
         //prepare the action bar
         setSupportActionBar(binding?.exerciseToolbar)
-        if (supportActionBar != null) supportActionBar?.setDisplayHomeAsUpEnabled(true) //show back arror for the action bar
+        if (supportActionBar != null) supportActionBar?.setDisplayHomeAsUpEnabled(true) //show back arrow for the action bar
         binding?.exerciseToolbar?.setNavigationOnClickListener { //what will happen when the back arrow is pressed
             initAlertDialog()
         }

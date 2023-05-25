@@ -1,0 +1,137 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:padding="10dp"
+    tools:context=".BMIActivity">
+
+    <androidx.appcompat.widget.Toolbar
+        android:id="@+id/bmiToolbar"
+        android:layout_width="match_parent"
+        android:layout_height="?android:attr/actionBarSize"
+        android:theme="@style/toolBarTheme"
+        app:layout_constraintTop_toTopOf="parent"/>
+
+    <LinearLayout
+        android:id="@+id/llWeight"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="40dp"
+        android:orientation="horizontal"
+        android:layout_marginTop="15dp"
+        app:layout_constraintTop_toBottomOf="@id/bmiToolbar">
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/tiWeight"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="3"
+            android:layout_marginEnd="10dp"
+            android:layout_marginBottom="10dp"
+            android:paddingBottom="15dp"
+            android:hint="Enter your Weight"
+            app:endIconMode="clear_text"
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+            android:textColorHint="@color/baseColor">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/etWeight"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:inputType="numberDecimal|numberSigned" />
+
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <Spinner
+            android:id="@+id/weightSpinner"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:padding="5dp"
+            android:entries="@array/weightUnit"/>
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/llHeight"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toBottomOf="@id/llWeight"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent">
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/tiHeight"
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="10dp"
+            android:layout_weight="3"
+            android:paddingBottom="15dp"
+            app:endIconMode="clear_text"
+            android:hint="Enter your Height"
+            android:textColorHint="@color/baseColor">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/etHeight"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:inputType="numberDecimal" />
+
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <Spinner
+            android:id="@+id/heightSpinner"
+            android:layout_width="0dp"
+            android:layout_height="60dp"
+            android:layout_weight="1"
+            android:padding="5dp"
+            android:entries="@array/HeightUnit" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/llResult"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="15dp"
+        android:gravity="center"
+        android:visibility="invisible"
+        tools:visibility="visible"
+        android:orientation="vertical"
+        app:layout_constraintTop_toBottomOf="@id/llHeight">
+
+        <TextView
+            android:id="@+id/bmiResultText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:padding="5dp"
+            android:textColor="@color/baseColor"
+            android:textStyle="bold"
+            android:textAllCaps="true"
+            android:textSize="22sp"
+            tools:text="your bmi is 22.5"/>
+        <TextView
+            android:id="@+id/adviceText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:padding="5dp"
+            android:textSize="22sp"
+            tools:text="you are over-weight. You should eat more of fruits and vegetables"/>
+
+    </LinearLayout>
+
+    <Button
+        android:id="@+id/btnSubmit"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="15dp"
+        android:backgroundTint="@color/baseColor"
+        android:text="calculate BMI"
+        android:textSize="22sp"
+        app:layout_constraintTop_toBottomOf="@id/llResult"/>
+
+</androidx.constraintlayout.widget.ConstraintLayout>
