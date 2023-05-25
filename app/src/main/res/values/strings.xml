@@ -1,3 +1,5 @@
 <resources>
     <string name="app_name">WorkoutApp</string>
+    <string name="encouragementText">You have completed today\'s workout.\n Remember, consistency is key.
+        Endeavour to come back tomorrow for more workout to stay healthy and build a routine. Cheers!</string>
 </resources>
